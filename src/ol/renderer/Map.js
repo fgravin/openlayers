@@ -11,6 +11,7 @@ import {visibleAtResolution} from '../layer/Layer.js';
 import {getLayerRendererPlugins} from '../plugins.js';
 import {iconImageCache} from '../style.js';
 import _ol_transform_ from '../transform.js';
+import RendererType from "./Type.js";
 
 /**
  * @constructor
@@ -206,7 +207,10 @@ MapRenderer.prototype.getLayerRenderer = function(layer) {
   } else {
     const layerRendererPlugins = getLayerRendererPlugins();
     let renderer;
-    const type = this.getType();
+    let type = this.getType();
+    if (type === RendererType.MIXED || type === RendererType.WEBGL) {
+      type = layer.get('renderer') || RendererType.CANVAS;
+    }
     for (let i = 0, ii = layerRendererPlugins.length; i < ii; ++i) {
       const plugin = layerRendererPlugins[i];
       if (plugin['handles'](type, layer)) {

@@ -17,6 +17,7 @@ import WebGLImageLayerRenderer from './renderer/webgl/ImageLayer.js';
 import WebGLMapRenderer from './renderer/webgl/Map.js';
 import WebGLTileLayerRenderer from './renderer/webgl/TileLayer.js';
 import WebGLVectorLayerRenderer from './renderer/webgl/VectorLayer.js';
+import MixedMapRenderer from './renderer/mixed/Map.js';
 
 
 register(PluginType.MAP_RENDERER, CanvasMapRenderer);
@@ -35,6 +36,7 @@ registerMultiple(PluginType.LAYER_RENDERER, [
   WebGLVectorLayerRenderer
 ]);
 
+register(PluginType.MAP_RENDERER, MixedMapRenderer);
 
 /**
  * @classdesc

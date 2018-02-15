@@ -20,6 +20,7 @@ import PriorityQueue from '../../structs/PriorityQueue.js';
 import _ol_webgl_ from '../../webgl.js';
 import WebGLContext from '../../webgl/Context.js';
 import ContextEventType from '../../webgl/ContextEventType.js';
+import ContextManager from '../mixed/ContextManager.js';
 
 
 /**
@@ -38,6 +39,8 @@ const WEBGL_TEXTURE_CACHE_HIGH_WATER_MARK = 1024;
  */
 const WebGLMapRenderer = function(container, map) {
   MapRenderer.call(this, container, map);
+
+  this.contextManager_ = new ContextManager();
 
   /**
    * @private
@@ -453,6 +456,9 @@ WebGLMapRenderer.prototype.renderFrame = function(frameState) {
     if (visibleAtResolution(layerState, viewResolution) &&
         layerState.sourceState == SourceState.READY) {
       layerRenderer = /** @type {ol.renderer.webgl.Layer} */ (this.getLayerRenderer(layerState.layer));
+
+      const renderCtxt = this.contextManager_.getContext(layerRenderer);
+
       if (layerRenderer.prepareFrame(frameState, layerState, context)) {
         layerStatesToDraw.push(layerState);
       }
@@ -465,6 +471,7 @@ WebGLMapRenderer.prototype.renderFrame = function(frameState) {
     this.canvas_.width = width;
     this.canvas_.height = height;
   }
+  this.contextManager_.clear(width, height);
 
   gl.bindFramebuffer(_ol_webgl_.FRAMEBUFFER, null);
 
@@ -476,7 +483,8 @@ WebGLMapRenderer.prototype.renderFrame = function(frameState) {
   for (i = 0, ii = layerStatesToDraw.length; i < ii; ++i) {
     layerState = layerStatesToDraw[i];
     layerRenderer = /** @type {ol.renderer.webgl.Layer} */ (this.getLayerRenderer(layerState.layer));
-    layerRenderer.composeFrame(frameState, layerState, context);
+    const renderCtxt = this.contextManager_.getContext(layerRenderer);
+    layerRenderer.composeFrame(frameState, layerState, renderCtxt ? renderCtxt.context : context);
   }
 
   if (!this.renderedVisible_) {

@@ -8,5 +8,6 @@
  */
 export default {
   CANVAS: 'canvas',
-  WEBGL: 'webgl'
+  WEBGL: 'webgl',
+  MIXED: 'mixed'
 };
