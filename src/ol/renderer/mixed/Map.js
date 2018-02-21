@@ -70,19 +70,8 @@ MixedMapRenderer['create'] = function(container, map) {
  */
 MixedMapRenderer.prototype.dispatchComposeEvent_ = function(type, frameState) {
   const map = this.getMap();
-  const context = this.context_;
   if (map.hasListener(type)) {
-    const extent = frameState.extent;
-    const pixelRatio = frameState.pixelRatio;
-    const viewState = frameState.viewState;
-    const rotation = viewState.rotation;
-
-    const transform = this.getTransform(frameState);
-
-    const vectorContext = new CanvasImmediateRenderer(context, pixelRatio,
-      extent, transform, rotation);
-    const composeEvent = new RenderEvent(type, vectorContext,
-      frameState, context, null);
+    const composeEvent = new RenderEvent(type);
     map.dispatchEvent(composeEvent);
   }
 };
