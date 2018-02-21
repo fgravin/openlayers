@@ -36,19 +36,19 @@ const ContextManager = function() {
 inherits(ContextManager, Disposable);
 
 
-ContextManager.prototype.getContext = function(layerRenderer) {
+ContextManager.prototype.getContext = function(layerRenderer, layer) {
   const layerKey = getUid(layerRenderer).toString();
   if (layerKey in this.pool_) {
     return this.pool_[layerKey];
   } else {
     if (layerRenderer instanceof IntermediateCanvas) {
-      const context = new CanvasContext();
+      const context = new CanvasContext(layer);
       this.pool_[layerKey] = context;
       return context;
     }
     else if (layerRenderer instanceof WebGLLayerRenderer) {
       return null;
-      const context = new WebglContext();
+      const context = new WebglContext(layer);
       this.pool_[layerKey] = context;
       return context;
     }

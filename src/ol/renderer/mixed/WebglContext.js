@@ -25,7 +25,7 @@ import ContextEventType from '../../webgl/ContextEventType.js';
  * @constructor
  * @api
  */
-const WebglContext = function() {
+const WebglContext = function(layer) {
 
   Context.call(this);
 

@@ -155,7 +155,7 @@ MixedMapRenderer.prototype.renderFrame = function(frameState) {
         layerState.sourceState != SourceState.READY) {
       continue;
     }
-    const context = this.contextManager_.getContext(layerRenderer);
+    const context = this.contextManager_.getContext(layerRenderer, layer);
     layerRenderer.mapRenderer = context;
     if (layerRenderer.prepareFrame(frameState, layerState,context.context)) {
       layerRenderer.composeFrame(frameState, layerState, context.context);

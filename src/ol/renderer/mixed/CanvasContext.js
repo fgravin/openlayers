@@ -1,7 +1,7 @@
 /**
  * @module ol/renderer/mixed/CanvasContext
  */
-import {inherits} from '../../index.js';
+import {getUid, inherits} from '../../index.js';
 import Context from './Context';
 import {createCanvasContext2D} from "../../dom.js";
 import {CLASS_UNSELECTABLE} from "../../css.js";
@@ -13,15 +13,19 @@ import {CLASS_UNSELECTABLE} from "../../css.js";
  * @param {ol.PluggableMap} map Map.
  * @api
  */
-const CanvasContext = function(container, map) {
+const CanvasContext = function(layer) {
 
   Context.call(this);
 
+  const layerKey = getUid(layer).toString();
 
   this.context = createCanvasContext2D();
   this.canvas_ = this.context.canvas;
 
   const viewport = document.getElementsByClassName('ol-viewport')[0];
+  layer.set('canvas', this.canvas_);
+
+  this.canvas_.id = 'ol-layer-canvas-' + layerKey;
   this.canvas_.style.width = '100%';
   this.canvas_.style.height = '100%';
   this.canvas_.style.position = 'absolute';
