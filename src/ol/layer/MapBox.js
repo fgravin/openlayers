@@ -45,6 +45,13 @@ MapBox.prototype.initMap = function() {
 
   const options = assign(this.baseOptions, {
     center,
+    scrollZoom: false,
+    dragPan: false,
+    dragRotate: false,
+    boxZoom: false,
+    keyboard: false,
+    doubleClickZoom: false,
+    touchZoomRotate: false,
     container: map.getTargetElement(),
     zoom: view.getZoom() - 1
   });
@@ -59,7 +66,7 @@ MapBox.prototype.initMap = function() {
     ].forEach( className => document.getElementsByClassName(className)[0].remove());
   });
 
-  map.on('precompose', () => {
+  map.on('precomposae', () => {
     const center = transformToLatLng(view.getCenter());
     const zoom = view.getZoom() - 1;
     this.mbmap.jumpTo({
