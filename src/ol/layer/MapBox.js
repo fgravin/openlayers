@@ -1,17 +1,12 @@
 /**
  * @module ol/layer/Layer
  */
-import {listen, unlistenByKey} from '../events.js';
-import EventType from '../events/EventType.js';
-import {getUid, inherits} from '../index.js';
-import BaseObject from '../Object.js';
-import BaseLayer from '../layer/Base.js';
-import LayerProperty from '../layer/Property.js';
-import {assign} from '../obj.js';
-import RenderEventType from '../render/EventType.js';
-import SourceState from '../source/State.js';
-import mapboxgl from 'mapbox-gl';
+import {inherits} from "../index.js";
+import BaseLayer from "../layer/Base.js";
+import {assign} from "../obj.js";
+import mapboxgl from "mapbox-gl/dist/mapbox-gl-dev.js";
 import {getTransform} from "../proj";
+
 
 const MapBox = function(options) {
 
@@ -59,9 +54,8 @@ MapBox.prototype.initMap = function() {
     const viewport = document.getElementsByClassName('ol-viewport')[0];
     const mbcanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
     viewport.insertBefore(mbcanvas, viewport.firstChild);
-    [ 'mapboxgl-missing-css',
-      'mapboxgl-control-container',
-      'mapboxgl-canvas-container',
+    [
+      'mapboxgl-control-container'
     ].forEach( className => document.getElementsByClassName(className)[0].remove());
   });
 
@@ -72,9 +66,8 @@ MapBox.prototype.initMap = function() {
       center: center,
       zoom: zoom
     });
-    console.log('move mapbox');
   });
-  window.mbmap = this.mbmap;
+
 };
 
 MapBox.prototype.setVisible = function(visible) {
@@ -125,6 +118,42 @@ MapBox.prototype.handleSourcePropertyChange_ = function() {
 MapBox.prototype.setMap = function(map) {
   this.map_ = map;
   this.initMap();
+};
+
+MapBox.prototype.getMbMap = function() {
+  return this.mbmap;
+};
+
+mapboxgl.Map.prototype._setupContainer = function _setupContainer () {
+  var container = this._container;
+  container.classList.add('mapboxgl-map');
+
+  var canvasContainer = this._canvasContainer = container.firstChild;
+
+  this._canvas = document.createElement('canvas');
+  canvasContainer.insertBefore(this._canvas, canvasContainer.firstChild);
+  this._canvas.style.position = 'absolute';
+  this._canvas.addEventListener('webglcontextlost', this._contextLost, false);
+  this._canvas.addEventListener('webglcontextrestored', this._contextRestored, false);
+  this._canvas.setAttribute('tabindex', '0');
+  this._canvas.setAttribute('aria-label', 'Map');
+  this._canvas.className = 'mapboxgl-canvas';
+
+  var dimensions = this._containerDimensions();
+  this._resizeCanvas(dimensions[0], dimensions[1]);
+
+  this._controlContainer = canvasContainer;
+  var controlContainer = this._controlContainer = document.createElement('div');
+  controlContainer.className = 'mapboxgl-control-container';
+  container.appendChild(controlContainer);
+
+  var positions = this._controlPositions = {};
+  ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(function (positionName) {
+    var elem = document.createElement('div');
+    elem.className = "mapboxgl-ctrl-" + positionName;
+    controlContainer.appendChild(elem);
+    positions[positionName] = elem;
+  });
 };
 
 export default MapBox;
