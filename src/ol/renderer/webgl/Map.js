@@ -451,14 +451,15 @@ WebGLMapRenderer.prototype.renderFrame = function(frameState) {
   stableSort(layerStatesArray, sortByZIndex);
 
   const viewResolution = frameState.viewState.resolution;
-  let i, ii, layerRenderer, layerState;
+  let i, ii, layer, layerRenderer, layerState;
   for (i = 0, ii = layerStatesArray.length; i < ii; ++i) {
     layerState = layerStatesArray[i];
+    layer = layerState.layer;
     if (visibleAtResolution(layerState, viewResolution) &&
         layerState.sourceState == SourceState.READY) {
       layerRenderer = /** @type {ol.renderer.webgl.Layer} */ (this.getLayerRenderer(layerState.layer));
 
-      const renderCtxt = this.contextManager_.getContext(layerRenderer);
+      const renderCtxt = this.contextManager_.getContext(layerRenderer, layer);
 
       if (layerRenderer.prepareFrame(frameState, layerState, context)) {
         layerStatesToDraw.push(layerState);
@@ -483,8 +484,9 @@ WebGLMapRenderer.prototype.renderFrame = function(frameState) {
 
   for (i = 0, ii = layerStatesToDraw.length; i < ii; ++i) {
     layerState = layerStatesToDraw[i];
+    layer = layerState.layer;
     layerRenderer = /** @type {ol.renderer.webgl.Layer} */ (this.getLayerRenderer(layerState.layer));
-    const renderCtxt = this.contextManager_.getContext(layerRenderer);
+    const renderCtxt = this.contextManager_.getContext(layerRenderer, layer);
     layerRenderer.composeFrame(frameState, layerState, renderCtxt ? renderCtxt.context : context);
   }
 
