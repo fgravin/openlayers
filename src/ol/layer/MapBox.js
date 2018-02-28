@@ -66,8 +66,19 @@ MapBox.prototype.initMap = function() {
     ].forEach( className => document.getElementsByClassName(className)[0].remove());
   });
 
-  map.on('precomposae', () => {
-    const center = transformToLatLng(view.getCenter());
+  let centerLastRender = view.getCenter();
+  let centerNextRender;
+
+  map.on('postrender', () => {
+    // Update offset
+    centerNextRender = view.getCenter();
+    const lastRender = map.getPixelFromCoordinate(centerLastRender);
+    const nextRender = map.getPixelFromCoordinate(centerNextRender);
+    const offset = [lastRender[0] - nextRender[0], lastRender[1] - nextRender[1]];
+    this.updateRenderedPosition(offset);
+
+    // Re-render mbmap
+    const center = transformToLatLng(centerNextRender);
     const zoom = view.getZoom() - 1;
     this.mbmap.jumpTo({
       center: center,
@@ -75,7 +86,18 @@ MapBox.prototype.initMap = function() {
     });
   });
 
+  this.mbmap.on("render", () => {
+    // Reset offset
+    centerLastRender = centerNextRender;
+    this.updateRenderedPosition([0, 0]);
+  });
 };
+
+MapBox.prototype.updateRenderedPosition = function(offset) {
+  const style = this.mbmap.getCanvas().style;
+  style.left = Math.round(offset[0]) + 'px';
+  style.top = Math.round(offset[1]) + 'px';
+}
 
 MapBox.prototype.setVisible = function(visible) {
   BaseLayer.prototype.setVisible.call(this, visible);
