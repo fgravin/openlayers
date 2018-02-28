@@ -68,14 +68,18 @@ MapBox.prototype.initMap = function() {
 
   let centerLastRender = view.getCenter();
   let centerNextRender;
+  let zoomLastRender = view.getZoom();
+  let zoomNextRender;
 
   map.on('postrender', () => {
     // Update offset
     centerNextRender = view.getCenter();
     const lastRender = map.getPixelFromCoordinate(centerLastRender);
     const nextRender = map.getPixelFromCoordinate(centerNextRender);
-    const offset = [lastRender[0] - nextRender[0], lastRender[1] - nextRender[1]];
-    this.updateRenderedPosition(offset);
+    const centerOffset = [lastRender[0] - nextRender[0], lastRender[1] - nextRender[1]];
+    zoomNextRender = view.getZoom();
+    const zoomOffset = Math.pow(2, zoomNextRender - zoomLastRender);
+    this.updateRenderedPosition(centerOffset, zoomOffset);
 
     // Re-render mbmap
     const center = transformToLatLng(centerNextRender);
@@ -89,14 +93,16 @@ MapBox.prototype.initMap = function() {
   this.mbmap.on("render", () => {
     // Reset offset
     centerLastRender = centerNextRender;
-    this.updateRenderedPosition([0, 0]);
+    zoomLastRender = zoomNextRender;
+    this.updateRenderedPosition([0, 0], 1);
   });
 };
 
-MapBox.prototype.updateRenderedPosition = function(offset) {
+MapBox.prototype.updateRenderedPosition = function(centerOffset, zoomOffset) {
   const style = this.mbmap.getCanvas().style;
-  style.left = Math.round(offset[0]) + 'px';
-  style.top = Math.round(offset[1]) + 'px';
+  style.left = Math.round(centerOffset[0]) + 'px';
+  style.top = Math.round(centerOffset[1]) + 'px';
+  style.transform = 'scale(' + zoomOffset + ')';
 }
 
 MapBox.prototype.setVisible = function(visible) {
