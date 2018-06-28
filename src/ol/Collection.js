@@ -5,6 +5,7 @@ import {inherits} from './util.js';
 import AssertionError from './AssertionError.js';
 import CollectionEventType from './CollectionEventType.js';
 import BaseObject from './Object.js';
+import Layer from './layer/Image.js';
 import Event from './events/Event.js';
 
 
@@ -16,6 +17,9 @@ const Property = {
   LENGTH: 'length'
 };
 
+/** @typedef {typeof import("./CollectionEventType")} CollectionEventType */
+/** @typedef {typeof import("./layer/Image")} Layer */
+
 
 /**
  * @classdesc
@@ -23,13 +27,18 @@ const Property = {
  * type.
  *
  * @constructor
- * @extends {module:ol/events/Event}
- * @param {module:ol/CollectionEventType} type Type.
+ * @extends {BaseObject}
+ * @param {CollectionEventType} type Type.
+ * @param {Layer} type Type.
  * @param {*=} opt_element Element.
  */
-export const CollectionEvent = function(type, opt_element) {
+export const CollectionEvent = function(type, layer, opt_element) {
 
   Event.call(this, type);
+
+  console.log(type.TOTO);
+
+  layer.toto();
 
   /**
    * The element that is added to or removed from the collection.
